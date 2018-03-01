@@ -93,7 +93,7 @@
                 float DF = 0.0;
 
                 float a = 0.0;
-                vec2 vel = vec2(time*0.1) + mouse.x/resolution.x;
+                vec2 vel = vec2(time*0.1);
                 DF += snoise(pos+vel)*.25+.25;
 
                 a = 0.1;
@@ -114,16 +114,12 @@
             uniform sampler2D texture;
             varying vec2 vUv;
 
-            float fill(float sdf, float w) {
-                return 1.-step(w,sdf);
-            }
-
             void main( void ) {
                 vec2 position = vUv;
 
-                float frequency = 10.;
-                float amplitude = 0.03;
-                float distortion = sin(position.y*frequency+mouse.x/resolution.x)*amplitude;
+                float frequency = 40.;
+                float amplitude = 0.05*(mouse.x/resolution.x);
+                float distortion = cos(position.x*frequency+time)*sin(position.y*amplitude);
 
                 vec4 color = texture2D(texture,vec2(position.x+distortion,position.y));
                 gl_FragColor = vec4( color );
@@ -151,22 +147,23 @@
             animate();
             function init() {
                 container = document.getElementById( 'container' );
-                camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
-                camera.position.z = 3.5;
                 scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
+                camera.position.z = 17;
+
+                var camobj = new THREE.Object3D;
+                camobj.add(camera);
+                camobj.rotateX(Math.PI/360 * -60);
+                camobj.rotateY(Math.PI/360 * 36);
+                scene.add(camobj);
+                
 
                 uniforms = {
                     time:       { value: 1.0 },
                     resolution: { value: new THREE.Vector2() },
-                    texture: {value: new THREE.TextureLoader().load("asset/word_lg.png")},
+                    texture: {value: new THREE.TextureLoader().load("asset/word_noir.png")},
                     mouse: {type: "v2", value: new THREE.Vector2()}
                 };
-
-                var material = new THREE.ShaderMaterial( {
-                    uniforms: uniforms,
-                    vertexShader: document.getElementById( 'vertexShader' ).textContent,
-                    fragmentShader: document.getElementById( 'fragment_shader' ).textContent
-                    } );
 
                 var material_word = new THREE.ShaderMaterial( {
                     uniforms: uniforms,
@@ -178,23 +175,43 @@
                     side: THREE.DoubleSide
                     } );
 
-                var donut = new THREE.TorusGeometry( 0.6, 0.1, 20, 80 );
-
-                mesh = new THREE.Mesh( donut, material );
-                mesh.rotateY(Math.PI/360 * -270);
-                mesh.rotateX(Math.PI/360 * 60);
-                console.log(mesh);
-                scene.add( mesh );
-
-                var geometry = new THREE.PlaneBufferGeometry( 1, 1 );
+                var geometry = new THREE.PlaneBufferGeometry( 3, 3 );
                 var word = new THREE.Mesh( geometry, material_word );
-                word.position.z = 0.6;
-                word.position.x = -0.2;
-                // word.rotateY(Math.PI/360 * 120);
+                word.position.z = 8;
+                word.position.y = 4;
+                word.position.x = 3;
+                word.rotateX(Math.PI/360*-60);
+                // word.rotateY(Math.PI/360*30);
                 scene.add( word );
 
+                var tubeObject = new THREE.Object3D;
+
+                 for (var j = 0; j < 3; j++) {
+                   for (var i = 1; i < 40; i++) {
+                        var tubeGeometry = new THREE.TorusGeometry( 
+                        0.5+(j*0.2),            //radius
+                        0.02,             //tube diameter
+                        46,             //radial segment
+                        46,             //tubular segment
+                        -6*Math.PI/4   //central angle
+                        );
+
+                        var tubeMaterial = new THREE.MeshBasicMaterial({ color: 0xc6c6c6 });
+                        var tube = new THREE.Mesh( tubeGeometry, tubeMaterial );
+                        tube.position.z = i*0.2;
+                        tubeObject.add(tube);
+                        
+                    }
+                 } 
+                
+                tubeObject.rotateZ(Math.PI/360 * 300);
+                tubeObject.position.x = 2;
+                tubeObject.position.y = 2.5;
+                scene.add(tubeObject);
+                
+
                 renderer = new THREE.WebGLRenderer();
-                renderer.setClearColor( 0x231f20 );
+                renderer.setClearColor( 0xf0f0f0 );
                 renderer.setPixelRatio( window.devicePixelRatio );
                 container.appendChild( renderer.domElement );
                 onWindowResize();
@@ -235,7 +252,7 @@
             function render() {
                 var delta = clock.getDelta();
                 uniforms.time.value += delta * 0.8;
-                // mesh.rotation.y += delta * 0.1;
+                // mesh.rotation.y += delta * -0.01;
                 renderer.render( scene, camera );
             }
         </script>
