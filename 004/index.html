@@ -63,8 +63,8 @@
         camera.position.z = 500;
         // camera.lookAt(new THREE.Vector3(60, -60, 0));
         var spotLight = new THREE.DirectionalLight(0xffffff);
-        spotLight.position = new THREE.Vector3(0, 100, 70);
-        spotLight.intensity = 0.7;
+        spotLight.position = new THREE.Vector3(0, 300, 0);
+        spotLight.intensity = 1.0;
         scene.add(spotLight);
         // add the output of the renderer to the html element
         document.getElementById("WebGL-output").appendChild(webGLRenderer.domElement);
@@ -75,6 +75,9 @@
 
             this.curve = 1.5;
             this.radius = 90;
+            this.x = false;
+            this.y = false;
+            this.z = true;
 
             var randomPoints = [];
             for ( var i = 0; i < this.curve; i = i + 0.1 ) {
@@ -92,8 +95,21 @@
                 randomPoints = [];
 
                 for ( var i = -1; i < controls.curve; i = i + 0.1 ) {
-                    randomPoints.push( new THREE.Vector3( i, Math.sin(i) * controls.radius, Math.cos(i) * controls.radius ));
+                    if ( controls.x ) {
+                        randomPoints.push( 
+                            new THREE.Vector3( Math.cos(i) * controls.radius, Math.sin(i) * controls.radius, i )
+                        );
+                    } else if (controls.y) {
+                        randomPoints.push( 
+                            new THREE.Vector3( Math.cos(i) * controls.radius, i, Math.sin(i) * controls.radius )
+                        );
+                    } else {
+                        randomPoints.push( 
+                            new THREE.Vector3( i, Math.cos(i) * controls.radius, Math.sin(i) * controls.radius )
+                        );
+                    }
                 }
+
                 randomSpline =  new THREE.CatmullRomCurve3( randomPoints );
                 // create a new one
                 var options = {
@@ -115,6 +131,9 @@
         gui.add(controls, 'curve', 0, 6).step(0.1).onChange(controls.asGeom);
         gui.add(controls, 'radius', 0, 200).step(1).onChange(controls.asGeom);
         gui.add(controls, 'steps', 1, 200).step(1).onChange(controls.asGeom);
+        gui.add(controls, 'x').onChange(controls.asGeom);
+        gui.add(controls, 'y').onChange(controls.asGeom);
+        gui.add(controls, 'z').onChange(controls.asGeom);
         controls.asGeom();
         render();
         function drawShape() {
@@ -132,7 +151,7 @@
         }
 
         function createWire(geom) {
-            var wireframeMat = new THREE.MeshStandardMaterial({color: 0xffffff, wireframe: true, wireframeLinewidth: 5.0})
+            var wireframeMat = new THREE.MeshStandardMaterial({color: 0xffffff, wireframe: true, wireframeLinewidth: 2.0})
             var meshWireframe = new THREE.Mesh(geom, wireframeMat);
             meshWireframe.rotation.z = Math.PI;
             meshWireframe.rotation.y = Math.PI/360 * 220;
