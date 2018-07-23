@@ -118,8 +118,8 @@
                 vec2 position = vUv;
 
                 float frequency = 100.;
-                float amplitude = 0.01*(mouse.x/resolution.y);
-                float distortion = sin(position.x*frequency)*amplitude;
+                float amplitude = 0.05*(mouse.x/resolution.y);
+                float distortion = cos(position.y*frequency)*sin(position.x*amplitude);
 
                 vec4 color = texture2D(texture,vec2(position.x,position.y+distortion));
                 gl_FragColor = vec4( color );
@@ -140,7 +140,7 @@
         <script>
             if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
             var container, stats;
-            var camera, scene, renderer, mesh;
+            var camera, scene, renderer, mesh, word;
             var uniforms, uniforms_word;
             var clock = new THREE.Clock();
             init();
@@ -149,12 +149,13 @@
                 container = document.getElementById( 'container' );
                 camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
                 camera.position.z = 3.5;
+                // camera.position.y = 0.3;
                 scene = new THREE.Scene();
 
                 uniforms = {
                     time:       { value: 1.0 },
                     resolution: { value: new THREE.Vector2() },
-                    texture: {value: new THREE.TextureLoader().load("asset/thisisfranchise.png")},
+                    texture: {value: new THREE.TextureLoader().load("asset/circle.png")},
                     mouse: {type: "v2", value: new THREE.Vector2()}
                 };
 
@@ -175,26 +176,29 @@
                     } );
 
                 var donut = new THREE.SphereGeometry( 0.3, 128, 128 );
-                var texture = new THREE.TextureLoader().load( 'asset/ball.png' );
+                var texture = new THREE.TextureLoader().load( 'asset/ball_pink.png' );
                 var ballMaterial = new THREE.MeshBasicMaterial( { map: texture } );
 
                 mesh = new THREE.Mesh( donut, ballMaterial );
                 scene.add( mesh );
 
-                var geometry = new THREE.PlaneBufferGeometry( 3, 3 );
-                var word = new THREE.Mesh( geometry, material_word );
-                word.position.z = -0.2;
+                var geometry = new THREE.PlaneBufferGeometry( 2.5, 2.5 );
+                word = new THREE.Mesh( geometry, material_word );
+                // word.position.z = -0.2;
+                // word.position.y = -0.3;
+                // word.rotateX(Math.PI/360* -150);
+                // word.rotateZ(Math.PI/360* 45);
                 scene.add( word );
 
                 renderer = new THREE.WebGLRenderer();
-                renderer.setClearColor( 0x111011 );
+                renderer.setClearColor( 0xffffff );
                 renderer.setPixelRatio( window.devicePixelRatio );
                 container.appendChild( renderer.domElement );
                 onWindowResize();
                 window.addEventListener( 'resize', onWindowResize, false );
 
                 //controls
-                controls = new THREE.TransformControls( camera );
+                controls = new THREE.TrackballControls( camera );
                 controls.rotateSpeed = 1.0;
                 controls.zoomSpeed = 1.2;
                 controls.panSpeed = 0.8;
@@ -227,6 +231,7 @@
             function render() {
                 var delta = clock.getDelta();
                 uniforms.time.value += delta * 0.8;
+                word.rotation.z += delta * -0.1;
                 mesh.rotation.z += delta * -0.3;
                 mesh.rotation.y += delta * -0.3;
                 renderer.render( scene, camera );
