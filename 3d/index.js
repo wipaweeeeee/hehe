@@ -1,4 +1,4 @@
-var avatar = "mixamo.glb";
+var avatar = "nic.glb";
 var clock = new THREE.Clock();
 var renderer = new THREE.WebGLRenderer({ antialias: false });
 renderer.setClearColor( 0xffffff );
