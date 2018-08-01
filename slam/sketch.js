@@ -1,16 +1,16 @@
 var img;
+var bgImg;
 function preload() {
   img = loadImage('slam.png');
+  bgImg = loadImage('slam-bg.png');
 }
 
 function setup() {
   	createCanvas(window.innerWidth, window.innerHeight);
-	// image(img, 100, 100, 50, 50);
-	background(193,49,255);
+	image(bgImg, 0, 0, 1200, 675);
+	// background(193,49,255);
 }
 
 function draw() {
-  // background(220);
-	// ellipse(mouseX+random(5),mouseY+random(5),50,50);
-	image(img, mouseX, mouseY, 300, 169);
+	image(img, mouseX+200, mouseY+200, 300, 132);
 }
