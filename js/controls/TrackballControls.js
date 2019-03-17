@@ -169,7 +169,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 				objectSidewaysDirection.crossVectors( objectUpDirection, eyeDirection ).normalize();
 
 				objectUpDirection.setLength( _moveCurr.y - _movePrev.y );
-				objectSidewaysDirection.setLength( _moveCurr.x - _movePrev.x );
+				//objectSidewaysDirection.setLength( _moveCurr.x - _movePrev.x );
 
 				moveDirection.copy( objectUpDirection.add( objectSidewaysDirection ) );
 

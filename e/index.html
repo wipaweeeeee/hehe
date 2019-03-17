@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>nic</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			} 
+
+			#container {
+				position:absolute;
+				margin-top: 60px;
+				background: rgb(231,231,231);
+				background: linear-gradient(356deg, rgba(231,231,231,1) 0%, rgba(252,252,252,1) 100%);
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="container"></div>
+
+		<script src="../three.min.js"></script>
+
+		<script src="../js/loaders/DDSLoader.js"></script>
+		<script src="../js/loaders/MTLLoader.js"></script>
+		<script src="../js/loaders/OBJLoader.js"></script>
+		<script src="../js/controls/TrackballControls.js"></script>
+
+		<script src="../js/Detector.js"></script>
+
+		<script>
+
+			var container, stats;
+
+			var camera, scene, renderer;
+
+			var mouseX = 0, mouseY = 0;
+
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+
+			var containerWidth = 600;
+			var containerHeight = 400;
+
+			var object;
+
+
+			init();
+			animate();
+
+
+			function init() {
+
+				container = document.getElementById( 'container' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+				camera.position.z = 200;
+				camera.position.y = 20;
+
+				// scene
+				scene = new THREE.Scene();
+
+				var ambient = new THREE.AmbientLight( 0x777777 );
+				scene.add( ambient );
+
+				var spot_1 = new THREE.SpotLight( 0xffffff, 0.6 );
+				spot_1.position.set( 60, 70, -120 );
+				scene.add( spot_1 );
+
+				var spotLightHelper_1 = new THREE.SpotLightHelper( spot_1 );
+				scene.add( spotLightHelper_1 );
+
+				
+
+				var spot_2 = new THREE.SpotLight( 0xffffff, 0.8 );
+				spot_2.position.set( -120, 40, 40 );
+				scene.add( spot_2 ); 
+
+				var spotLightHelper_2 = new THREE.SpotLightHelper( spot_2 );
+				scene.add( spotLightHelper_2 );
+
+				var spot_3 = new THREE.SpotLight( 0xffffff, 0.8 );
+				spot_3.position.set( 60, 50, 80 );
+				scene.add( spot_3 );
+
+				var spotLightHelper = new THREE.SpotLightHelper( spot_3 );
+				scene.add( spotLightHelper );
+
+				// model
+				var onProgress = function ( xhr ) {
+					if ( xhr.lengthComputable ) {
+						var percentComplete = xhr.loaded / xhr.total * 100;
+						console.log( Math.round(percentComplete, 2) + '% downloaded' );
+					}
+				};
+
+				var onError = function ( xhr ) { };
+
+				THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+
+				var mtlLoader = new THREE.MTLLoader();
+				mtlLoader.setPath( 'assets/' );
+				mtlLoader.load( 'Elysium_Basis_v02.mtl', function( materials ) {
+
+					materials.preload();
+
+					var objLoader = new THREE.OBJLoader();
+					objLoader.setMaterials( materials );
+					objLoader.setPath( 'assets/' );
+					objLoader.load( 'Elysium_Basis_v02.obj', function ( object ) {
+
+						object.scale.set(10,10,10);
+						object.position.set(0, -25, 0);
+						scene.add( object );
+
+						rotateObject (object);
+
+					}, onProgress, onError );
+
+				});
+
+				camera.aspect = containerWidth / containerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer = new THREE.WebGLRenderer({ alpha: true });
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( containerWidth, containerHeight );
+				container.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				//controls
+                controls = new THREE.TrackballControls( camera );
+                controls.rotateSpeed = 5.0;
+                controls.panSpeed = 0.8;
+                controls.noZoom = true;
+                controls.noPan = true;
+                controls.staticMoving = true;
+                controls.dynamicDampingFactor = 0.3;
+                controls.addEventListener( 'change', render );
+
+			}
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = containerWidth / containerHeight;
+
+				//camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function rotateObject (object) {
+				//object.rotation.y ++;
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				controls.update();
+				render();
+
+			}
+
+			function render() {
+
+				// camera.position.y += ( mouseY - camera.position.y ) * .1;
+				camera.lookAt( scene.position );
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+
+	</body>
+</html>

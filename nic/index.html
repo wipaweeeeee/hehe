@@ -44,6 +44,9 @@
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
 
+			var containerWidth = 600;
+			var containerHeight = 400;
+
 
 			init();
 			animate();
@@ -101,7 +104,8 @@
 
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				// renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( containerWidth, containerHeight );
 				container.appendChild( renderer.domElement );
 
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
