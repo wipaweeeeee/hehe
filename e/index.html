@@ -13,8 +13,9 @@
 			} 
 
 			#container {
-				position:absolute;
-				margin-top: 60px;
+				height: auto;
+				position: absolute;
+				margin: 60px;
 				background: rgb(231,231,231);
 				background: linear-gradient(356deg, rgba(231,231,231,1) 0%, rgba(252,252,252,1) 100%);
 			}
@@ -32,73 +33,14 @@
 		<script src="../js/controls/TrackballControls.js"></script>
 
 		<script src="../js/Detector.js"></script>
-
-		<script type="text/javascript">
-			
-			// Create the XHR object.
-			function createCORSRequest(method, url) {
-			  var xhr = new XMLHttpRequest();
-			  if ("withCredentials" in xhr) {
-			    // XHR for Chrome/Firefox/Opera/Safari.
-			    xhr.open(method, url, true);
-			  } else if (typeof XDomainRequest != "undefined") {
-			    // XDomainRequest for IE.
-			    xhr = new XDomainRequest();
-			    xhr.open(method, url);
-			  } else {
-			    // CORS not supported.
-			    xhr = null;
-			  }
-			  return xhr;
-			}
-
-			// Helper method to parse the title tag from the response.
-			function getTitle(text) {
-			  return text.match('<title>(.*)?</title>')[1];
-			}
-
-			// Make the actual CORS request.
-			function makeCorsRequest() {
-			  // This is a sample server that supports CORS.
-			  var url = 'https://drive.google.com/uc?export=download&id=1mw7Gss48FD_Fae6Xgwu53qeFfKLS-E1y';
-
-			  var xhr = createCORSRequest('GET', url);
-			  if (!xhr) {
-			    alert('CORS not supported');
-			    return;
-			  }
-
-			  // Response handlers.
-			  xhr.onload = function() {
-			    var text = xhr.responseText;
-			    var title = getTitle(text);
-			    alert('Response from CORS request to ' + url + ': ' + title);
-			  };
-
-			  xhr.onerror = function() {
-			    alert('Woops, there was an error making the request.');
-			  };
-
-			  xhr.send();
-			}
-
-			makeCorsRequest();
-
-		</script>
-
-		<!-- <script>
+		<script>
 
 
 			var container, stats;
 
 			var camera, scene, renderer;
 
-			var mouseX = 0, mouseY = 0;
-
-			var windowHalfX = window.innerWidth / 2;
-			var windowHalfY = window.innerHeight / 2;
-
-			var containerWidth = 600;
+			var containerWidth = 1200;
 			var containerHeight = 400;
 
 			var object;
@@ -113,7 +55,7 @@
 				container = document.getElementById( 'container' );
 				document.body.appendChild( container );
 
-				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+				camera = new THREE.PerspectiveCamera( 45, containerWidth / containerHeight, 1, 2000 );
 				camera.position.z = 200;
 				camera.position.y = 20;
 
@@ -123,28 +65,21 @@
 				var ambient = new THREE.AmbientLight( 0x777777 );
 				scene.add( ambient );
 
-				var spot_1 = new THREE.SpotLight( 0xffffff, 0.6 );
-				spot_1.position.set( 60, 70, -120 );
+				var spot_1 = new THREE.SpotLight( 0xffffff, 0.4 );
+				spot_1.position.set( -60, 50, -120 );
 				scene.add( spot_1 );
 
-				var spotLightHelper_1 = new THREE.SpotLightHelper( spot_1 );
-				scene.add( spotLightHelper_1 );
-
-				
-
-				var spot_2 = new THREE.SpotLight( 0xffffff, 0.8 );
+				var spot_2 = new THREE.SpotLight( 0xffffff, 0.6 );
 				spot_2.position.set( -120, 40, 40 );
 				scene.add( spot_2 ); 
 
-				var spotLightHelper_2 = new THREE.SpotLightHelper( spot_2 );
-				scene.add( spotLightHelper_2 );
-
-				var spot_3 = new THREE.SpotLight( 0xffffff, 0.8 );
-				spot_3.position.set( 60, 50, 80 );
+				var spot_3 = new THREE.SpotLight( 0xffffff, 0.6 );
+				spot_3.position.set( 60, 50, 100 );
 				scene.add( spot_3 );
 
-				var spotLightHelper = new THREE.SpotLightHelper( spot_3 );
-				scene.add( spotLightHelper );
+				var spot_4 = new THREE.SpotLight( 0xffffff, 0.6 );
+				spot_4.position.set( 120, 50, -120 );
+				scene.add( spot_4 );
 
 				// model
 				var onProgress = function ( xhr ) {
@@ -160,17 +95,19 @@
 
 				var mtlLoader = new THREE.MTLLoader();
 				//mtlLoader.setPath( 'assets/' );
-				mtlLoader.load( 'https://cors.io/?u=https://www.dropbox.com/s/okebdmktlbvaljw/Elysium_Basis_v02.mtl?dl=0', function( materials ) {
+				mtlLoader.crossOrigin = ''; 
+				mtlLoader.load( 'https://s3.amazonaws.com/wipawe/Elysium_Basis_v02.mtl', function( materials ) {
 
 					materials.preload();
 
 					var objLoader = new THREE.OBJLoader();
 					objLoader.setMaterials( materials );
-					objLoader.setPath( 'assets/' );
-					objLoader.load( 'Elysium_Basis_v02.obj', function ( object ) {
+					// objLoader.setPath( 'assets/' );
+					objLoader.load( 'https://s3.amazonaws.com/wipawe/Elysium_Basis_v02.obj', function ( object ) {
 
 						object.scale.set(10,10,10);
 						object.position.set(0, -25, 0);
+						object.rotation.x = Math.PI/360 * -10;
 						scene.add( object );
 
 					}, onProgress, onError );
@@ -190,7 +127,6 @@
 				//controls
                 controls = new THREE.TrackballControls( camera );
                 controls.rotateSpeed = 5.0;
-                controls.panSpeed = 0.8;
                 controls.noZoom = true;
                 controls.noPan = true;
                 controls.staticMoving = true;
@@ -201,15 +137,10 @@
 
 			function onWindowResize() {
 
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
-
 				camera.aspect = containerWidth / containerHeight;
-
-				//camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( containerWidth, containerHeight );
 
 			}
 
@@ -223,13 +154,12 @@
 
 			function render() {
 
-				// camera.position.y += ( mouseY - camera.position.y ) * .1;
 				camera.lookAt( scene.position );
 				renderer.render( scene, camera );
 
 			}
 
-		</script> -->
+		</script>
 
 	</body>
 </html>

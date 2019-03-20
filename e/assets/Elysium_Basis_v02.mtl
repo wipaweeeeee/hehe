@@ -3,12 +3,12 @@
 newmtl top
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd \tex\Cap_Type_002.png
+map_Kd https://s3.amazonaws.com/wipawe/Cap_Type_002.png
 illum 7
 
 newmtl base
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd \tex\Base_Type_002.png
+map_Kd https://s3.amazonaws.com/wipawe/Base_Type_002.png
 illum 7
 

@@ -157,7 +157,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		return function rotateCamera() {
 
-			moveDirection.set( _moveCurr.x - _movePrev.x, _moveCurr.y - _movePrev.y, 0 );
+			moveDirection.set( _moveCurr.x - _movePrev.x, 0, 0 );
 			angle = moveDirection.length();
 
 			if ( angle ) {
@@ -168,8 +168,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 				objectUpDirection.copy( _this.object.up ).normalize();
 				objectSidewaysDirection.crossVectors( objectUpDirection, eyeDirection ).normalize();
 
-				objectUpDirection.setLength( _moveCurr.y - _movePrev.y );
-				//objectSidewaysDirection.setLength( _moveCurr.x - _movePrev.x );
+				objectUpDirection.setLength( 0 );
+				objectSidewaysDirection.setLength( _moveCurr.x - _movePrev.x );
 
 				moveDirection.copy( objectUpDirection.add( objectSidewaysDirection ) );
 
